@@ -20,17 +20,41 @@ const settings = {
 const alchemy = new Alchemy(settings);
 
 function App() {
-  const [blockNumber, setBlockNumber] = useState();
+  const [block, setBlock] = useState();
+  const [BlockNumber, setBlockNumber] = useState();
+  const [hash, setHash] = useState();
+  const [nonce, setNonce] = useState();
+  const [transactions, setTransactions] = useState();
+
 
   useEffect(() => {
-    async function getBlockNumber() {
-      setBlockNumber(await alchemy.core.getBlockNumber());
+    async function getBlock() {
+      const numb = await alchemy.core.getBlockNumber();
+      setBlock(await alchemy.core.getBlockWithTransactions(numb));
+      setBlockNumber(block.number);
+      setHash(block.hash);
+      setNonce(block.nonce);
+
+      setTransactions(block.transactions);
+
     }
 
-    getBlockNumber();
+    getBlock();
   });
 
-  return <div className="App">Block Number: {blockNumber}</div>;
+
+  return <div className="App">
+    <div id="blockInfo">
+      <h3>Block Information</h3>
+      <p>Block Number: {BlockNumber}</p>
+      <p>Hash:{hash}</p>
+      <p>Nonce:{nonce}</p>
+    </div>
+    <div id="transactions">
+      <h3>Transactions:</h3>
+      {JSON.stringify(transactions)}
+    </div>
+  </div>;
 }
 
 export default App;
